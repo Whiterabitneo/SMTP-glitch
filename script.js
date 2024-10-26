@@ -11,7 +11,7 @@ document.getElementById('emailForm').addEventListener('submit', async function(e
     const apiUrl = 'https://api.getresponse.com/v3/email-campaigns/{campaignId}/send-newsletter'; // Replace {campaignId} with your campaign ID
     
     // GetResponse API key
-    const apiKey = 'your_api_key'; // Replace with your actual GetResponse API key
+    const apiKey = '30qazte0qysg38c7shxxsrvjslk4ra9a'; // Replace with your actual GetResponse API key
 
     // Construct email data object
     const emailData = {
