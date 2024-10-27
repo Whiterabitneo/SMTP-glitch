@@ -1,11 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const axios = require('axios');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const MAILERLITE_API_KEY = process.env.MAILERLITE_API_KEY;
 
-// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -13,8 +13,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/sendEmail', (req, res) => {
     const { senderName, senderEmail, recipientEmails, subject, message } = req.body;
 
-    // Example using Axios to send email via MailerLite API
-    axios.post('https://connect.mailerlite.com/api', {
+    // Prepare the email data
+    const postData = JSON.stringify({
         html: message,
         subject: subject,
         from: {
@@ -22,24 +22,44 @@ app.post('/sendEmail', (req, res) => {
             email: senderEmail
         },
         to: recipientEmails.map(email => ({ email: email }))
-    }, {
+    });
+
+    // Configure the HTTP request options
+    const options = {
+        hostname: 'connect.mailerlite.com',
+        port: 443,
+        path: '/api',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-MailerLite-ApiKey': process.env.MAILERLITE_API_KEY // Use the API key from environment variable
+            'Content-Length': postData.length,
+            'X-MailerLite-ApiKey': MAILERLITE_API_KEY
         }
-    })
-    .then(response => {
-        console.log('Email sent successfully:', response.data);
-        res.status(200).send('Email sent successfully');
-    })
-    .catch(error => {
-        console.error('Error sending email:', error.message); // Log the detailed error message
+    };
+
+    // Send the HTTP request
+    const request = https.request(options, response => {
+        let data = '';
+
+        response.on('data', chunk => {
+            data += chunk;
+        });
+
+        response.on('end', () => {
+            console.log('Email sent successfully:', data);
+            res.status(200).send('Email sent successfully');
+        });
+    });
+
+    request.on('error', error => {
+        console.error('Error sending email:', error);
         res.status(500).send(`Failed to send email. Error: ${error.message}`);
     });
+
+    request.write(postData);
+    request.end();
 });
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
