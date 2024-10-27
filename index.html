@@ -206,7 +206,7 @@ function showSuccessMessage() {
 function showErrorMessage(error) {
     document.getElementById('loadingMessage').style.display = 'none';
     document.getElementById('errorPopup').style.display = 'block';
-    document.getElementById('errorMessage').textContent = Failed to send email. Error: ${error.message};
+    document.getElementById('errorMessage').textContent = `Failed to send email. Error: ${error.message}`;
 }
 </script>
 
