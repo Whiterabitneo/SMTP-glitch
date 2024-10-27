@@ -32,9 +32,9 @@ app.post('/sendEmail', (req, res) => {
         res.status(200).send('Email sent successfully');
     })
     .catch(error => {
-        console.error('Error sending email:', error.message); // Log the detailed error message
-        res.status(500).send(Failed to send email. Error: ${error.message});
-    });
+    console.error('Error sending email:', error.message); // Log the detailed error message
+    res.status(500).send(Failed to send email. Error: ${error.message});
+});
 });
 
 app.listen(PORT, () => {
