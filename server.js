@@ -4,8 +4,8 @@ const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MAILERLITE_API_KEY = process.env.MAILERLITE_API_KEY; // Retrieve API key from environment variable
 
+// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -25,6 +25,7 @@ app.post('/sendEmail', (req, res) => {
     }, {
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-MailerLite-ApiKey': process.env.MAILERLITE_API_KEY // Use the API key from environment variable
         }
     })
@@ -38,6 +39,7 @@ app.post('/sendEmail', (req, res) => {
     });
 });
 
+// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
