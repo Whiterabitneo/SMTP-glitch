@@ -24,7 +24,7 @@ app.post('/sendEmail', (req, res) => {
     }, {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': Bearer mlsn.733b5957649ba4f32a8500439a1c7cb41c47d9fb3c0a09f7ca9575c184639a8e // Replace with your MailerSend API key
+            'Authorization': `Bearer mlsn.733b5957649ba4f32a8500439a1c7cb41c47d9fb3c0a09f7ca9575c184639a8e` // Replace with your MailerSend API key
         }
     })
     .then(response => {
@@ -33,10 +33,10 @@ app.post('/sendEmail', (req, res) => {
     })
     .catch(error => {
         console.error('Error sending email:', error.message); // Log the detailed error message
-        res.status(500).send(Failed to send email. Error: ${error.message});
+        res.status(500).send(`Failed to send email. Error: ${error.message}`);
     });
 });
 
 app.listen(PORT, () => {
-    console.log(Server is running on http://localhost:${PORT});
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
