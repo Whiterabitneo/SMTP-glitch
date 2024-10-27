@@ -25,7 +25,7 @@ app.post('/sendEmail', (req, res) => {
     }, {
         headers: {
             'Content-Type': 'application/json',
-            'X-MailerLite-ApiKey': MAILERLITE_API_KEY // Use the API key from environment variable
+            'X-MailerLite-ApiKey': process.env.MAILERLITE_API_KEY // Use the API key from environment variable
         }
     })
     .then(response => {
