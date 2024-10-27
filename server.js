@@ -12,20 +12,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/sendEmail', (req, res) => {
     const { senderName, senderEmail, recipientEmails, subject, message } = req.body;
 
-    // Example using Axios to send email via SendPulse API
-    axios.post('https://api.sendpulse.com/smtp/emails', {
-        html: message,
-        text: message, // optional: if you want to send text version of the email
+    // Example using Axios to send email via MailerLite API
+    axios.post('https://api.mailerlite.com/api/v2/send', {
+        groupId: YOUR_GROUP_ID_HERE, // Replace with your MailerLite group ID
         subject: subject,
-        from: {
-            name: senderName,
-            email: senderEmail
-        },
-        to: recipientEmails.map(email => ({ email: email }))
+        from: senderEmail,
+        body: message,
+        recipients: recipientEmails.join(','),
     }, {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer e28d8b979c3ab137d51ecde50ad91d95' // Replace with your SendPulse API key
+            'X-MailerLite-ApiKey': 'YOUR_API_KEY_HERE' // Replace with your MailerLite API key
         }
     })
     .then(response => {
