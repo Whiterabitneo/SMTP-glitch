@@ -1,51 +1,50 @@
-document.getElementById('emailForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent default form submission
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+const nodemailer = require('nodemailer');
 
-    // Show loading message
-    document.getElementById('loadingMessage').style.display = 'block';
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-    // Collect form data
-    const senderName = document.getElementById('senderName').value;
-    const senderEmail = document.getElementById('senderEmail').value;
-    const recipientEmails = document.getElementById('recipientEmails').value.split(',').map(email => email.trim());
-    const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
+// Body parser middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-    // Send data to server-side endpoint
-    axios.post('/sendEmail', {
-        senderName: senderName,
-        senderEmail: senderEmail,
-        recipientEmails: recipientEmails,
+// Serve static files (if any)
+app.use(express.static('public'));
+
+// Endpoint to handle email sending
+app.post('/sendEmail', (req, res) => {
+    const { senderName, senderEmail, recipientEmails, subject, message } = req.body;
+
+    // Example using Axios to send email via external API (replace with your API and logic)
+    axios.post('https://api.segnivo.com/v1/relay/send', {
         subject: subject,
-        message: message
+        from_name: senderName,
+        from_email: senderEmail,
+        recipients: recipientEmails,
+        content_type: 'html',
+        content: message,
+        // Add more options as needed
+    }, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-API-KEY': 'mlsn.733b5957649ba4f32a8500439a1c7cb41c47d9fb3c0a09f7ca9575c184639a8e'
+            // Replace with your actual API key or credentials
+        }
     })
     .then(response => {
         console.log('Email sent successfully:', response.data);
-        showSuccessMessage(); // Show success message
+        res.status(200).send('Email sent successfully');
     })
     .catch(error => {
         console.error('Error sending email:', error);
-        showErrorMessage(error); // Show error message with error details
-    })
-    .finally(() => {
-        document.getElementById('loadingMessage').style.display = 'none'; // Hide loading message
+        res.status(500).send('Failed to send email');
     });
 });
 
-// Function to show success message
-function showSuccessMessage() {
-    const loadingMessage = document.getElementById('loadingMessage');
-    loadingMessage.textContent = 'Email sent successfully!';
-    setTimeout(() => {
-        loadingMessage.style.display = 'none';
-    }, 3000); // Hide message after 3 seconds
-}
-
-// Function to show error message
-function showErrorMessage(error) {
-    const loadingMessage = document.getElementById('loadingMessage');
-    loadingMessage.textContent = `Failed to send email. Error: ${error.message}`;
-    setTimeout(() => {
-        loadingMessage.style.display = 'none';
-    }, 5000); // Hide message after 5 seconds
-}
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
