@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const http = require('http'); // Use Node.js's built-in http module
-const https = require('https'); // Use Node.js's built-in https module
+const https = require('https');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,20 +16,19 @@ app.post('/sendEmail', (req, res) => {
 
     // Prepare email data
     const emailData = JSON.stringify({
-        subject: subject,
         html: message,
-        recipients: recipientEmails.map(email => ({ email: email })),
+        subject: subject,
         from: {
             name: senderName,
             email: senderEmail
-        }
+        },
+        to: recipientEmails.map(email => ({ email: email }))
     });
 
     // Configure the HTTP request options
     const options = {
-        hostname: 'api.mailerlite.com',
-        port: 443,
-        path: '/api/v2/email',
+        hostname: 'connect.mailerlite.com',
+        path: '/api',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
