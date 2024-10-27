@@ -4,18 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Sender</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* General styling */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
             padding: 0;
+            margin: 0;
         }
+        .header {
+            background-color: #333; /* Dark gray header background */
+            padding: 10px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
         .container {
-            max-width: 600px;
+            max-width: 500px;
             margin: 20px auto;
-            background: #fff;
+            background: #333; /* Dark gray container background */
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -23,67 +35,180 @@
         label {
             margin-top: 10px;
             display: block;
+            color: #fff; /* White label text */
         }
         input, textarea {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
+            border: none;
+            background-color: #444; /* Dark gray input background */
+            color: #fff; /* White text */
             border-radius: 4px;
-            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+            white-space: pre-wrap; /* Preserve spaces and wrap lines */
+            text-align: justify; /* Justify text */
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* White shadow on focus */
         }
         button {
-            background-color: #007bff;
+            background-color: #28a745;
             color: white;
-            padding: 10px 20px;
+            padding: 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s ease; /* Smooth transition for button */
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #218838;
         }
+
         .loading {
             display: none;
             text-align: center;
             margin-top: 20px;
         }
+
         .loading p {
-            color: #999;
+            color: #ccc;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000; /* Ensure popup is above other elements */
+            display: none;
+            animation: popIn 0.5s ease forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            70% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes popOut {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%; /* Full width on smaller screens */
+                margin: 10px; /* Adjusted margin on smaller screens */
+            }
         }
     </style>
 </head>
 <body>
 
+<div class="header">
+    <h1>Email Sender</h1>
+</div>
+
 <div class="container">
     <h2>Send Email</h2>
     <form id="emailForm">
         <label for="senderName">Sender Name:</label>
-        <input type="text" id="senderName" required>
+        <input type="text" id="senderName" name="senderName" required>
 
         <label for="senderEmail">Sender Email:</label>
-        <input type="email" id="senderEmail" required>
+        <input type="email" id="senderEmail" name="senderEmail" required>
 
         <label for="recipientEmails">Recipient Emails (comma-separated):</label>
-        <input type="text" id="recipientEmails" required>
+        <input type="text" id="recipientEmails" name="recipientEmails" required>
 
         <label for="subject">Subject:</label>
-        <input type="text" id="subject" required>
+        <input type="text" id="subject" name="subject" required>
 
         <label for="message">Message:</label>
-        <textarea id="message" rows="5" required></textarea>
+        <textarea id="message" name="message" rows="5" required></textarea>
 
         <button type="submit">Send Email</button>
     </form>
-    <p id="loadingMessage" class="loading">
-        <span class="spinner"></span>
-        <br>
-        <em>Sending email...</em>
+    <p id="loadingMessage" style="display: none;">
+        Sending email...
     </p>
+    <div id="successPopup" style="display: none;">
+        <h3>Email Sent Successfully!</h3>
+    </div>
+    <div id="errorPopup" style="display: none;">
+        <h3>Error Sending Email</h3>
+        <p id="errorMessage"></p>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="script.js"></script>
+<script>
+    document.getElementById('emailForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const senderName = document.getElementById('senderName').value;
+    const senderEmail = document.getElementById('senderEmail').value;
+    const recipientEmails = document.getElementById('recipientEmails').value.split(',').map(email => email.trim());
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+
+    // Send data to server-side endpoint
+    axios.post('/sendEmail', {
+        senderName: senderName,
+        senderEmail: senderEmail,
+        recipientEmails: recipientEmails,
+        subject: subject,
+        message: message
+    })
+    .then(response => {
+        console.log('Email sent successfully:', response.data);
+        showSuccessMessage(); // Show success message
+    })
+    .catch(error => {
+        console.error('Error sending email:', error);
+        showErrorMessage(error); // Show error message with error details
+    })
+    .finally(() => {
+        document.getElementById('loadingMessage').style.display = 'none'; // Hide loading message
+    });
+});
+
+// Function to show success message
+function showSuccessMessage() {
+    document.getElementById('loadingMessage').style.display = 'none';
+    document.getElementById('successPopup').style.display = 'block';
+}
+
+// Function to show error message
+function showErrorMessage(error) {
+    document.getElementById('loadingMessage').style.display = 'none';
+    document.getElementById('errorPopup').style.display = 'block';
+    document.getElementById('errorMessage').textContent = Failed to send email. Error: ${error.message};
+}
+</script>
+
 </body>
 </html>
