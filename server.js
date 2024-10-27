@@ -14,7 +14,7 @@ app.post('/sendEmail', (req, res) => {
     const { senderName, senderEmail, recipientEmails, subject, message } = req.body;
 
     // Example using Axios to send email via MailerLite API
-    axios.post('https://api.mailerlite.com/api/v2/email', {
+    axios.post('https://connect.mailerlite.com/api', {
         html: message,
         subject: subject,
         from: {
