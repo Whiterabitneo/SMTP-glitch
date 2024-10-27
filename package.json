@@ -6,7 +6,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "body-parser": "^1.19.0",
-    "axios": "^0.24.0"
+    "axios": "^0.24.0",
+    "@mailerlite/mailerlite-nodejs": "^1.0.0"
   },
   "scripts": {
     "start": "node server.js"
@@ -18,5 +19,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Whiterabitneo/SMTP-glitch"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/your-username"
   }
 }
