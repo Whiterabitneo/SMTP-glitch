@@ -34,10 +34,10 @@ app.post('/sendEmail', (req, res) => {
     })
     .catch(error => {
         console.error('Error sending email:', error.message); // Log the detailed error message
-        res.status(500).send(Failed to send email. Error: ${error.message});
+        res.status(500).send('Failed to send email. Error: ${error.message}');
     });
 });
 
 app.listen(PORT, () => {
-    console.log(Server is running on http://localhost:${PORT});
+    console.log('Server is running on http://localhost:${PORT}');
 });
