@@ -27,8 +27,8 @@ app.post('/sendEmail', (req, res) => {
 
     // Configure the HTTP request options
     const options = {
-        hostname: 'connect.mailerlite.com',
-        path: '/api',
+        hostname: 'api.mailer.com',
+        path: '/api/v2/email',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
