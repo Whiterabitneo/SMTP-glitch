@@ -1,50 +1,49 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
-const nodemailer = require('nodemailer');
+document.getElementById('emailForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+    const senderName = document.getElementById('senderName').value;
+    const senderEmail = document.getElementById('senderEmail').value;
+    const recipientEmails = document.getElementById('recipientEmails').value.split(',').map(email => email.trim());
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
 
-// Body parser middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve static files (if any)
-app.use(express.static('public'));
-
-// Endpoint to handle email sending
-app.post('/sendEmail', (req, res) => {
-    const { senderName, senderEmail, recipientEmails, subject, message } = req.body;
-
-    // Example using Axios to send email via external API (replace with your API and logic)
-    axios.post('https://api.segnivo.com/v1/relay/send', {
+    // Send data to server-side endpoint
+    axios.post('https://connect.mailerlite.com/api', {
+        html: message,
         subject: subject,
-        from_name: senderName,
-        from_email: senderEmail,
-        recipients: recipientEmails,
-        content_type: 'html',
-        content: message,
-        // Add more options as needed
+        from: {
+            name: senderName,
+            email: senderEmail
+        },
+        to: recipientEmails.map(email => ({ email: email }))
     }, {
         headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-API-KEY': 'mlsn.733b5957649ba4f32a8500439a1c7cb41c47d9fb3c0a09f7ca9575c184639a8e'
-            // Replace with your actual API key or credentials
+            'Accept': 'application/json'
         }
     })
     .then(response => {
         console.log('Email sent successfully:', response.data);
-        res.status(200).send('Email sent successfully');
+        showSuccessMessage(); // Show success message
     })
     .catch(error => {
         console.error('Error sending email:', error);
-        res.status(500).send('Failed to send email');
+        showErrorMessage(error); // Show error message with error details
+    })
+    .finally(() => {
+        document.getElementById('loadingMessage').style.display = 'none'; // Hide loading message
     });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Function to show success message
+function showSuccessMessage() {
+    document.getElementById('loadingMessage').style.display = 'none';
+    document.getElementById('successPopup').style.display = 'block';
+}
+
+// Function to show error message
+function showErrorMessage(error) {
+    document.getElementById('loadingMessage').style.display = 'none';
+    document.getElementById('errorPopup').style.display = 'block';
+    document.getElementById('errorMessage').textContent = `Failed to send email. Error: ${error.message}`;
+}
