@@ -14,9 +14,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// MailerLite API credentials
-const API_KEY = process.env.MAILERLITE_API_KEY;
-const API_URL = 'https://connect.mailerlite.com/api'; // Updated API URL
+// Moosend API credentials
+const API_KEY = process.env.MOOSEND_API_KEY;
+const API_URL = 'https://api.moosend.com/v3';
 
 // Route to send email
 app.post('/send-email', async (req, res) => {
@@ -25,21 +25,18 @@ app.post('/send-email', async (req, res) => {
     try {
         // Prepare email data
         const emailData = {
-            subject,
-            html: content,
-            recipients: {
-                email: recipients.split(',').map(email => ({ email }))
-            },
-            options: {
-                unsubscribe_url: true
-            }
+            CampaignName: subject,
+            FromEmail: fromEmail,
+            FromName: fromName,
+            ToField: recipients,
+            Message: content
         };
 
-        // Send email using MailerLite API
-        const response = await axios.post(`${API_URL}/campaigns`, emailData, {
+        // Send email using Moosend API
+        const response = await axios.post(`${API_URL}/campaigns/email`, emailData, {
             headers: {
                 'Content-Type': 'application/json',
-                'X-MailerLite-ApiKey': API_KEY
+                'Authorization': `Bearer ${API_KEY}`
             }
         });
 
