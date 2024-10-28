@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // MailerLite API credentials
 const API_KEY = process.env.MAILERLITE_API_KEY;
-const API_URL = 'https://api.mailerlite.com/api/v2';
+const API_URL = 'https://connect.mailerlite.com/api/v2'; // Updated API URL
 
 // Route to send email
 app.post('/send-email', async (req, res) => {
