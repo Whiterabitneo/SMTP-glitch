@@ -10,33 +10,37 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const API_KEY = process.env.MAILERLITE_API_KEY;
-const API_URL = 'https://connect.mailerlite.com/api';
+const BASE_URL = 'https://connect.mailerlite.com/api';
 
 app.post('/send-email', async (req, res) => {
     const { fromName, fromEmail, recipients, subject, content } = req.body;
 
     try {
         const emailData = {
+            type: 'regular',
             subject,
             html: content,
             recipients: {
-                email: recipients.split(',').map(email => ({ email }))
-            },
-            options: {
-                unsubscribe_url: true
+                list_id: null,
+                emails: recipients.split(',').map(email => ({ email }))
             }
         };
 
-        const response = await axios.post(`${API_URL}/campaigns`, emailData, {
+        const response = await axios.post(`${BASE_URL}/email`, emailData, {
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-MailerLite-ApiKey': API_KEY
             }
         });
 
-        res.status(200).json({ message: 'Email sent successfully!' });
+        if (response.status === 200) {
+            res.status(200).json({ message: 'Email sent successfully!' });
+        } else {
+            throw new Error('Failed to send email.');
+        }
     } catch (error) {
-        console.error('Error sending email:', error.response.data);
+        console.error('Error sending email:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to send email.' });
     }
 });
