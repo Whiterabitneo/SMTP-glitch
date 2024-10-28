@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const API_KEY = process.env.MAILERLITE_API_KEY;
-const API_URL = 'https://api.mailerlite.com/api/v2';
+const API_URL = 'https://connect.mailerlite.com/api';
 
 app.post('/send-email', async (req, res) => {
     const { fromName, fromEmail, recipients, subject, content } = req.body;
