@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Send Email</h1>
+        <form id="emailForm">
+            <label for="fromName">From Name:</label><br>
+            <input type="text" id="fromName" name="fromName" required><br>
+
+            <label for="fromEmail">From Email:</label><br>
+            <input type="email" id="fromEmail" name="fromEmail" required><br>
+
+            <label for="recipients">Recipients (comma-separated):</label><br>
+            <input type="text" id="recipients" name="recipients" required><br>
+
+            <label for="subject">Subject:</label><br>
+            <input type="text" id="subject" name="subject" required><br>
+
+            <label for="content">Content:</label><br>
+            <textarea id="content" name="content" rows="5" required></textarea><br>
+
+            <button type="submit">Send Email</button>
+        </form>
+    </div>
+
+    <div id="successPopup" class="success-popup">
+        Email sent successfully!
+    </div>
+
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            try {
+                const response = await fetch('/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formObject)
+                });
+
+                const result = await response.json();
+                showSuccessMessage();
+                this.reset();
+            } catch (error) {
+                console.error('Error sending email:', error);
+                alert('Failed to send email. Please try again later.');
+            }
+        });
+
+        function showSuccessMessage() {
+            const successPopup = document.getElementById('successPopup');
+            successPopup.classList.add('show');
+
+            setTimeout(() => {
+                successPopup.classList.remove('show');
+            }, 3000); // Adjust time as needed
+        }
+    </script>
+</body>
+</html>
