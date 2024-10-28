@@ -34,41 +34,45 @@
     </div>
 
     <script>
-        document.getElementById('emailForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
+    document.getElementById('emailForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
 
-            const formData = new FormData(this);
-            const formObject = {};
-            formData.forEach((value, key) => {
-                formObject[key] = value;
-            });
-
-            try {
-                const response = await fetch('/send-email', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formObject)
-                });
-
-                const result = await response.json();
-                showSuccessMessage();
-                this.reset();
-            } catch (error) {
-                console.error('Error sending email:', error);
-                alert('Failed to send email. Please try again later.');
-            }
+        const formData = new FormData(this);
+        const formObject = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value;
         });
 
-        function showSuccessMessage() {
-            const successPopup = document.getElementById('successPopup');
-            successPopup.classList.add('show');
+        try {
+            const response = await fetch('/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formObject)
+            });
 
-            setTimeout(() => {
-                successPopup.classList.remove('show');
-            }, 3000); // Adjust time as needed
+            if (!response.ok) {
+                throw new Error('Failed to send email.');
+            }
+
+            const result = await response.json();
+            showSuccessMessage();
+            this.reset();
+        } catch (error) {
+            console.error('Error sending email:', error);
+            alert('Failed to send email. Please try again later.');
         }
-    </script>
+    });
+
+    function showSuccessMessage() {
+        const successPopup = document.getElementById('successPopup');
+        successPopup.classList.add('show');
+
+        setTimeout(() => {
+            successPopup.classList.remove('show');
+        }, 3000); // Adjust time as needed
+    }
+</script>
 </body>
 </html>
