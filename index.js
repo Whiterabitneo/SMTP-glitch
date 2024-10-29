@@ -66,6 +66,11 @@ function handleEmailRequest(req, res) {
 // Endpoint to handle email sending
 app.post('/send', handleEmailRequest);
 
+// Route to handle requests to the root URL '/'
+app.get('/', (req, res) => {
+    res.send('Welcome to the MailerLite Email Sender API'); // Example response for the root URL
+});
+
 // Handle unknown routes with a 404 response
 app.use((req, res) => {
     console.log(`Received request for ${req.url} but no matching route found.`);
