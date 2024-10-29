@@ -1,47 +1,35 @@
-const axios = require('axios');
-const dotenv = require('dotenv');
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
+document.getElementById("emailForm").addEventListener("submit", function(event) {
+    event.preventDefault();
 
-dotenv.config();
+    var form = document.getElementById("emailForm");
+    var formData = new FormData(form);
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+    var raw = {};
+    formData.forEach(function(value, key){
+        raw[key] = value;
+    });
+    raw['subject'] = 'Relay Transactional Email'; // Default subject
 
-// Middleware
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("X-API-KEY", "<Your Segnivo API Key>");
 
-// Route for sending email
-app.post('/send-email', async (req, res) => {
-    const { fromName, fromEmail, recipients, subject, content } = req.body;
-
-    const emailData = {
-        CampaignName: subject,
-        fromemail: fromEmail,
-        fromname: fromName,
-        tofield: recipients,
-        Message: content
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: JSON.stringify(raw),
+        redirect: 'follow'
     };
 
-    try {
-        const response = await axios.post('https://api.moosend.com/v3', emailData, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.MOOSEND_API_KEY}`
-            }
+    fetch("https://api.segnivo.com/v1/relay/send", requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            // Handle success: show a success message or perform further actions
+        })
+        .catch(error => {
+            console.error('Error sending email:', error);
+            // Handle error: show an error message or log the error
         });
-
-        console.log('Moosend API Response:', response.data);
-        res.status(200).json({ message: 'Email sent successfully!' });
-    } catch (error) {
-        console.error('Error sending email:', error.message);
-        res.status(500).json({ error: 'Failed to send email. Please try again later.' });
-    }
-});
-
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
 });
