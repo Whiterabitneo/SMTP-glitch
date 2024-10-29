@@ -10,23 +10,13 @@
     <div class="container">
         <h1>Send Email</h1>
         <form id="emailForm">
-            <label for="fromName">From Name:</label><br>
-            <input type="text" id="fromName" name="fromName" required><br>
-
-            <label for="fromEmail">From Email:</label><br>
-            <input type="email" id="fromEmail" name="fromEmail" required><br>
-
-            <label for="recipients">Recipients (comma-separated):</label><br>
-            <input type="text" id="recipients" name="recipients" required><br>
-
-            <label for="subject">Subject:</label><br>
-            <input type="text" id="subject" name="subject" required><br>
-
-            <label for="content">Content:</label><br>
-            <textarea id="content" name="content" rows="5" required></textarea><br>
-
-            <button type="submit">Send Email</button>
-        </form>
+    <input type="text" id="fromEmail" name="from_email" placeholder="Your Email">
+    <input type="text" id="replyTo" name="reply_to" placeholder="Reply To">
+    <input type="text" id="recipient" name="recipients" placeholder="Recipient Email">
+    <textarea id="emailContent" name="content" placeholder="Email Content"></textarea>
+    <!-- Other fields as needed -->
+    <button type="submit">Send Email</button>
+</form>
     </div>
 
     <div id="successPopup" class="success-popup">
