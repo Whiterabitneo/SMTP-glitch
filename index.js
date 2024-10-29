@@ -3,11 +3,15 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import fetch from 'node-fetch'; // Import fetch for making HTTP requests
 import dotenv from 'dotenv'; // Import dotenv to load environment variables
+import path from 'path'; // Import path module
 
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
 app.use(bodyParser.json());
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Handle incoming request, assuming you use Express or another framework
 function handleEmailRequest(req, res) {
