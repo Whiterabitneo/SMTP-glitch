@@ -13,7 +13,7 @@ document.getElementById("emailForm").addEventListener("submit", function(event) 
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Accept", "application/json");
-    myHeaders.append("X-API-KEY", "<Your Segnivo API Key>");
+    myHeaders.append("X-API-KEY", "6938f850cdfe8d41bc954f819643afd2c52edacb");
 
     var requestOptions = {
         method: 'POST',
