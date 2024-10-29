@@ -1,5 +1,3 @@
-// Example server setup using Express with ECMAScript Modules
-
 // Importing modules with `import`
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -10,6 +8,8 @@ app.use(bodyParser.json());
 
 // Handle incoming request, assuming you use Express or another framework
 function handleEmailRequest(req, res) {
+    console.log('Received POST request to /send'); // Log when request is received
+
     // Extract data from request body (assuming it's sent as JSON)
     const { from_email, reply_to, recipients, content } = req.body;
 
@@ -42,14 +42,17 @@ function handleEmailRequest(req, res) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'X-API-KEY': '<6938f850cdfe8d41bc954f819643afd2c52edacb>'
+            'X-API-KEY': '6938f850cdfe8d41bc954f819643afd2c52edacb'
         },
         body: JSON.stringify(raw)
     };
 
     // Make request to Segnivo API using fetch
     fetch('https://api.segnivo.com/v1/relay/send', requestOptions)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Received response from Segnivo API:', response.status); // Log response status
+            return response.json();
+        })
         .then(result => {
             console.log('Email sent successfully:', result);
             res.status(200).json(result); // Send success response to client
@@ -61,10 +64,11 @@ function handleEmailRequest(req, res) {
 }
 
 // Endpoint to handle email sending
-app.post('/send-email', handleEmailRequest);
+app.post('/send', handleEmailRequest);
 
 // Handle unknown routes with a 404 response
 app.use((req, res) => {
+    console.log(`Received request for ${req.url} but no matching route found.`);
     res.status(404).json({ error: 'Not found' });
 });
 
