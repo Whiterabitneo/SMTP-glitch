@@ -44,12 +44,6 @@ function handleEmailRequest(req, res) {
     fetch('https://api.systeme.io/emails/send', requestOptions)
         .then(response => {
             console.log('Received response from Systeme.io API:', response.status); // Log response status
-            
-            // Check if response is successful (status 200-299)
-            if (!response.ok) {
-                throw new Error('Failed to send email: ' + response.statusText);
-            }
-
             return response.json();
         })
         .then(result => {
@@ -61,3 +55,23 @@ function handleEmailRequest(req, res) {
             res.status(500).json({ error: 'Failed to send email' }); // Send error response to client
         });
 }
+
+// Endpoint to handle email sending
+app.post('/send', handleEmailRequest);
+
+// Route to handle requests to the root URL '/'
+app.get('/', (req, res) => {
+    res.send('Welcome to the Systeme.io Email Sender API'); // Example response for the root URL
+});
+
+// Handle unknown routes with a 404 response
+app.use((req, res) => {
+    console.log(`Received request for ${req.url} but no matching route found.`);
+    res.status(404).json({ error: 'Not found' });
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
