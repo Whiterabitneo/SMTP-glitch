@@ -2,6 +2,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import fetch from 'node-fetch'; // Import fetch for making HTTP requests
+import dotenv from 'dotenv'; // Import dotenv to load environment variables
+
+dotenv.config(); // Load environment variables from .env file
 
 const app = express();
 app.use(bodyParser.json());
@@ -13,44 +16,29 @@ function handleEmailRequest(req, res) {
     // Extract data from request body (assuming it's sent as JSON)
     const { from_email, reply_to, recipients, content } = req.body;
 
-    // Construct the request to Segnivo API
+    // Construct the request to Systeme.io API
     const raw = {
+        apiKey: process.env.SYSTEMEIO_API_KEY, // Use Systeme.io API key from environment variable
+        email: recipients,
+        fromName: 'Jane Doe', // Example, adjust as needed
+        fromEmail: from_email,
         subject: 'Relay Transactional Email',
-        from_name: 'Jane Doe', // Example, adjust as needed
-        from_email,
-        content_type: 'html',
-        reply_to,
-        recipients: [recipients],
-        content,
-        sign_dkim: true,
-        track_open: true,
-        track_click: true,
-        is_transactional: false,
-        custom_headers: {
-            'x-custom-header': 'demo-header'
-        },
-        delivery_at: 1720311502, // Example, adjust as needed
-        attachments: [
-            'https://media.macphun.com/img/uploads/customer/how-to/608/15542038745ca344e267fb80.28757312.jpg',
-            'https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg'
-        ],
-        preheader: 'Awesome Email'
+        htmlContent: content,
+        replyTo: reply_to
     };
 
     const requestOptions = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-API-KEY': '6938f850cdfe8d41bc954f819643afd2c52edacb'
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(raw)
     };
 
-    // Make request to Segnivo API using fetch
-    fetch('https://api.segnivo.com/v1/relay/send', requestOptions)
+    // Make request to Systeme.io API using fetch
+    fetch('https://api.systeme.io/emails/send', requestOptions)
         .then(response => {
-            console.log('Received response from Segnivo API:', response.status); // Log response status
+            console.log('Received response from Systeme.io API:', response.status); // Log response status
             return response.json();
         })
         .then(result => {
@@ -68,7 +56,7 @@ app.post('/send', handleEmailRequest);
 
 // Route to handle requests to the root URL '/'
 app.get('/', (req, res) => {
-    res.send('Welcome to the MailerLite Email Sender API'); // Example response for the root URL
+    res.send('Welcome to the Systeme.io Email Sender API'); // Example response for the root URL
 });
 
 // Handle unknown routes with a 404 response
