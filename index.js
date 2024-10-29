@@ -43,15 +43,17 @@ function handleEmailRequest(req, res) {
     // Make request to Systeme.io API using fetch
     fetch('https://api.systeme.io/emails/send', requestOptions)
         .then(response => {
-            console.log('Received response from Systeme.io API:', response.status); // Log response status
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
             return response.json();
         })
         .then(result => {
-            console.log('Email sent successfully:', result);
+            console.log('Received response from Systeme.io API:', result); // Log successful response
             res.status(200).json(result); // Send success response to client
         })
         .catch(error => {
-            console.error('Error sending email:', error);
+            console.error('Error sending email:', error); // Log error details
             res.status(500).json({ error: 'Failed to send email' }); // Send error response to client
         });
 }
