@@ -1,31 +1,24 @@
-// Importing modules with `import`
 import express from 'express';
 import bodyParser from 'body-parser';
-import fetch from 'node-fetch'; // Import fetch for making HTTP requests
-import dotenv from 'dotenv'; // Import dotenv to load environment variables
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config(); // Load environment variables from .env file
+dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
 
-// Serve static files from the 'public' directory (for index.html and related files)
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Handle incoming request, assuming you use Express or another framework
 function handleEmailRequest(req, res) {
-    console.log('Received POST request to /send'); // Log when request is received
+    const { from_email, reply_to, recipients, content, from_name } = req.body;
 
-    // Extract data from request body (assuming it's sent as JSON)
-    const { from_email, reply_to, recipients, content } = req.body;
-
-    // Construct the request to Systeme.io API
     const raw = {
-        apiKey: process.env.SYSTEMEIO_API_KEY, // Use Systeme.io API key from environment variable
+        apiKey: process.env.KINGMAILER_API_KEY,
         email: recipients,
-        fromName: 'Jane Doe', // Example, adjust as needed
+        fromName: from_name || 'Jane Doe',
         fromEmail: from_email,
         subject: 'Relay Transactional Email',
         htmlContent: content,
@@ -40,8 +33,7 @@ function handleEmailRequest(req, res) {
         body: JSON.stringify(raw)
     };
 
-    // Make request to Systeme.io API using fetch
-    fetch('https://api.systeme.io/emails/send', requestOptions)
+    fetch('https://api.kingmailer.com/emails/send', requestOptions)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -49,30 +41,26 @@ function handleEmailRequest(req, res) {
             return response.json();
         })
         .then(result => {
-            console.log('Received response from Systeme.io API:', result); // Log successful response
-            res.status(200).json(result); // Send success response to client
+            console.log('Received response from Kingmailer API:', result);
+            res.status(200).json(result);
         })
         .catch(error => {
-            console.error('Error sending email:', error); // Log error details
-            res.status(500).json({ error: 'Failed to send email' }); // Send error response to client
+            console.error('Error sending email:', error);
+            res.status(500).json({ error: 'Failed to send email' });
         });
 }
 
-// Endpoint to handle email sending
 app.post('/send', handleEmailRequest);
 
-// Route to handle requests to the root URL '/'
 app.get('/', (req, res) => {
-    res.send('Welcome to the Systeme.io Email Sender API'); // Example response for the root URL
+    res.send('Welcome to the Kingmailer Email Sender API');
 });
 
-// Handle unknown routes with a 404 response
 app.use((req, res) => {
     console.log(`Received request for ${req.url} but no matching route found.`);
     res.status(404).json({ error: 'Not found' });
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
