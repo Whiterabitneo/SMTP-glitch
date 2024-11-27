@@ -24,21 +24,34 @@ def index():
 
 @app.route('/send-email', methods=['POST'])
 def send_email():
-    recipient = request.form['email-recipient']
+    # Extract the form data
+    from_name = request.form['from-name']
+    recipients = request.form['email-recipient'].split(',')
+    bcc = request.form.get('email-bcc', '').split(',')
+    reply_to = request.form.get('email-reply-to', '')
     subject = request.form['email-subject']
     body = request.form['email-body']  # The body is the HTML content from Quill
 
-    # Create a Message object
+    # Create the email Message object
     msg = Message(subject=subject,
-                  recipients=[recipient],
-                  html=body)  # Set the body as HTML content
+                  recipients=recipients,
+                  html=body,  # Set the body as HTML content
+                  sender=f'{from_name} <{os.getenv("SMTP_USER")}>')
+
+    # Add BCC recipients if provided
+    if bcc:
+        msg.bcc = bcc
+
+    # Set the Reply-To field if provided
+    if reply_to:
+        msg.reply_to = reply_to
 
     # Send the email
     try:
         mail.send(msg)
-        return f'Email successfully sent to {recipient}'
+        return f'Email successfully sent to {", ".join(recipients)}'
     except Exception as e:
         return f'Error sending email: {str(e)}'
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+if __name__ == '__main__':
+    app.run(debug=True)
