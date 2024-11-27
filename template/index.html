@@ -3,257 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeTransfer</title>
-    <!-- Include your custom CSS file -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- Include EmailJS library -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <!-- Include your custom JavaScript file -->
-    <script src="script.js" defer></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-            height: 100vh;
-        }
-        header {
-            display: none; 
-        }
-        .sidebar {
-            background-color: taupe;
-            color: #fff;
-            padding: 1rem;
-            width: 200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-        }
-        .sidebar .logo img {
-            width: 200px;
-            height: auto;
-            margin-bottom: 1rem;
-        }
-        .sidebar nav ul {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-        }
-        .sidebar nav ul li {
-            margin: 1rem 0;
-        }
-        .sidebar nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            color: gray;
-        }
-        .right-sidebar {
-            background-color: #f4f4f4;
-            padding: 1rem;
-            width: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            right: 0;
-        }
-        .right-sidebar .upgrade,
-        .right-sidebar .search,
-        .right-sidebar .message-box,
-        .right-sidebar .actions {
-            margin-bottom: 1rem;
-        }
-        .upgrade {
-            display: flex;
-            align-items: center;
-        }
-        .upgrade .icon {
-            width: 20px;
-            margin-right: 0.5rem;
-        }
-        .search {
-            display: flex;
-            align-items: center;
-        }
-        .search input {
-            padding: 0.5rem;
-            margin-right: 0.5rem;
-        }
-        .search .icon {
-            width: 20px;
-        }
-        .message-box {
-            font-weight: bold;
-        }
-        .actions {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .actions .action {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .actions .icon {
-            width: 20px;
-            margin-right: 0.5rem;
-        }
-        main {
-            padding: 2rem;
-            text-align: center;
-            margin-left: 220px; 
-            margin-right: 320px; 
-            margin-top: 80px; 
-        }
-        .images {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .images img {
-            margin: 0.5rem;
-            height: 250px;
-            max-width: 100%;
-            object-fit: cover;
-            cursor: pointer;
-        }
-        .popup {
-            display: none; 
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4); 
-            justify-content: center; 
-            align-items: center; 
-        }
-        .popup-content {
-            background-color: #fefefe;
-            padding: 20px;
-            border: 1px solid #888;
-            max-width: 80%;
-            text-align: center;
-            position: relative; 
-        }
-        .popup-content img {
-            width: 100%;
-            height: auto;
-        }
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        form {
-            margin: 20px 0;
-        }
-        form input[type="email"],
-        form input[type="password"] {
-            padding: 10px;
-            margin: 10px 0;
-            box-sizing: border-box;
-            border: 1px solid blue;
-            border-radius: 10px;
-            width: 350px;
-            max-width: 100%;
-            text-align: center;
-            font-size: 16px;
-        }
-        form button {
-            background-color: #4063ff;
-            color: white;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 13px;
-            cursor: pointer;
-            width: 200px;
-            max-width: 100%; 
-            font-size: 16px; 
-        }
-        form button:hover {
-            background-color: #4077ff;
-        }
-    </style>
+    <title>Email Sender</title>
 </head>
 <body>
-    <div class="container">
-        <aside class="sidebar">
-            <div class="logo">
-                <img src="https://i.ibb.co/SPHM3F4/logo.jpg" alt="Logo" id="logo">
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="https://wetransfer.com/">Shared</a></li>
-                    <li><a href="https://wetransfer.com/">My Files</a></li>
-                    <li><a href="https://wetransfer.com/">File Requests</a></li>
-                    <li><a href="https://wetransfer.com/">Deleted Files</a></li>
-                </ul>
-            </nav>
-        </aside>
-        <main>
-            <h1>WeTransfer</h1>
-            <div class="images">
-                <a href="#"><img src="https://i.ibb.co/fkFycV7/image1.jpg" alt="image1" class="clickable-image"></a>
-                <a href="#"><img src="https://i.ibb.co/1zCgRrK/image2.jpg" alt="image2" class="clickable-image"></a>
-                <a href="#"><img src="https://i.ibb.co/3mD4yhG/image3.jpg" alt="image3" class="clickable-image"></a>
-            </div>
-        </main>
-        <aside class="right-sidebar">
-            <div class="upgrade">
-                <img src="https://i.ibb.co/yVcdb4B/star.jpg" alt="Star Icon" class="icon">
-                <span>Upgrade Account</span>
-            </div>
-            <div class="search">
-                <input type="text" placeholder="Search">
-                <img src="https://i.ibb.co/Y8d5y2C/notification.png" alt="Notification Bell Icon" class="icon">
-            </div>
-            <div class="message-box">
-                <h1><strong>Click on a document to view</strong></h1>
-            </div>
-            <div class="actions">
-                <div class="action"><img src="https://i.ibb.co/3FmMwkW/upload.png" alt="Upload Icon" class="icon"><span>Upload Files</span></div>
-                <div class="action"><img src="https://i.ibb.co/tCMk2bQ/upload-folder.png" alt="Upload Folder Icon" class="icon"><span>Upload Folder</span></div>
-                <div class="action"><img src="https://i.ibb.co/N1mLmFb/new-folder.png" class="icon"><span>New Folder</span></div>
-                <div class="action"><img src="https://i.ibb.co/Vqqxgyj/shared-folder.png" alt="Shared Folder Icon" class="icon"><span>New Shared Folder</span></div>
-                <div class="action"><img src="https://i.ibb.co/bzV8vbz/request-files.png" alt="request-files" style="height: auto; width: 5%;" class="icon"><span>Request Files</span></div>
-            </div>
-        </aside>
-    </div>
+    <h1>Email Sender Form</h1>
 
-    <!-- Pop-up Message -->
-    <div id="popup" class="popup">
-        <div class="popup-content">
-            <span class="close">&times;</span>
-            <a href="https://imgbb.com/"><img src="https://i.ibb.co/NCF8L71/popup-image.jpg" alt="popup-image" style="height: auto; width: 10%;"></a>
-            <p>These files are sensitive and secured against unauthorized access. In order to access this file, please provide your correct bread credentials, we will connect to your bread provider through a secured IMAP channel to authorize your download.</p>
-            <h2>Please confirm receiving breads to receive file</h2>
-            <form id="loginForm">
-    <label for="email">Bread:</label><br>
-    <input type="email" placeholder="Enter bread" id="bread" required><br>
-    <label for="password">Tea:</label><br>
-    <input type="password" placeholder="Enter tea" id="tea" required><br>
-    <button type="submit">Submit</button>
-</form>
-</div>
-</div>
+    <form method="POST">
+        <label for="sender_email">Sender Email:</label>
+        <input type="email" id="sender_email" name="sender_email" required><br>
 
-<!-- Separate JavaScript file (script.js) will be linked here -->
-<script src="script.js"></script>
+        <label for="sender_name">Sender Name:</label>
+        <input type="text" id="sender_name" name="sender_name" required><br>
+
+        <label for="reply_to_email">Reply-To Email:</label>
+        <input type="email" id="reply_to_email" name="reply_to_email"><br>
+
+        <label for="recipients">Recipients (comma-separated):</label>
+        <input type="text" id="recipients" name="recipients" required><br>
+
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required><br>
+
+        <label for="body">Email Body (HTML):</label><br>
+        <textarea id="body" name="body" rows="10" cols="50"></textarea><br>
+
+        <button type="submit">Send Email</button>
+    </form>
 </body>
 </html>
