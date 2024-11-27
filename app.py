@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from flask_mail import Mail, Message
 import os
-from werkzeug.utils import secure_filename
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -16,12 +15,6 @@ app.config['MAIL_PASSWORD'] = 'fahyzamnsbcwlqjh'  # Use the generated App Passwo
 
 # Set the default sender (required for Flask-Mail to work properly)
 app.config['MAIL_DEFAULT_SENDER'] = 'hewlettpackardenterprise01@gmail.com'  # Set this to your email
-
-# Configure upload folder (create the directory dynamically)
-UPLOAD_FOLDER = 'uploads/'  # Directory where files will be saved
-if not os.path.exists(UPLOAD_FOLDER):  # Check if the directory exists
-    os.makedirs(UPLOAD_FOLDER)  # Create the directory if it doesn't exist
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Initialize Flask-Mail
 mail = Mail(app)
@@ -38,6 +31,7 @@ def send_email():
         bcc_emails = request.form['bcc'].split(',')
         subject = request.form['subject']
         body = request.form['email-body']  # This will be plain text
+        reply_to = request.form.get('reply-to')  # Get the "Reply-To" email address
 
         # Create the email message with plain text only (no HTML part)
         msg = Message(
@@ -45,7 +39,8 @@ def send_email():
             recipients=[],  # No recipients because using BCC
             bcc=bcc_emails,
             body=body,  # Plain text content (body)
-            sender=app.config['MAIL_DEFAULT_SENDER']  # Explicitly set the sender here
+            sender=app.config['MAIL_DEFAULT_SENDER'],  # Explicitly set the sender here
+            reply_to=reply_to  # Set the "Reply-To" address
         )
 
         # Send the email
@@ -57,4 +52,3 @@ def send_email():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=10000)  # Running on port 10000
-
