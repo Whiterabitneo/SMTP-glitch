@@ -147,13 +147,13 @@
         document.querySelector('form').addEventListener('submit', function(e) {
             // Get the HTML content from Quill
             var emailBody = quill.root.innerHTML;
-            
+
             // Create a hidden input for the email body
             var emailBodyInput = document.createElement('input');
             emailBodyInput.type = 'hidden';
             emailBodyInput.name = 'email-body';
             emailBodyInput.value = emailBody;
-            
+
             // Append the hidden input to the form
             this.appendChild(emailBodyInput);
         });
