@@ -6,12 +6,12 @@ import os
 app = Flask(__name__)
 
 # Configure email settings (use environment variables or direct credentials)
-app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
-app.config['MAIL_PORT'] = os.getenv('MAIL_PORT', 587)
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # SMTP server for Gmail
+app.config['MAIL_PORT'] = 587  # Port for sending emails using TLS
+app.config['MAIL_USE_TLS'] = True  # Use TLS for encryption
+app.config['MAIL_USE_SSL'] = False  # Do not use SSL
+app.config['MAIL_USERNAME'] = 'hewlettpackardenterprise01@gmail.com'  # Your Gmail address
+app.config['MAIL_PASSWORD'] = 'your-app-password-here'  # Use the generated App Password here
 
 # Set the default sender (required for Flask-Mail to work properly)
 app.config['MAIL_DEFAULT_SENDER'] = 'hewlettpackardenterprise01@gmail.com'  # Set this to your email
@@ -65,4 +65,4 @@ def send_email():
         return f"An error occurred: {e}", 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=10000)
+    app.run(debug=True, host='0.0.0.0', port=10000)  # Running on port 10000
