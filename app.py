@@ -36,7 +36,7 @@ def send_email():
         bcc_emails = request.form['bcc'].split(',')  
         subject = request.form['subject']
         body = request.form['email-body']  
-        reply_to = request.form.get('reply-to')
+        reply_to = request.form.get('reply-to')  # Retrieve the 'reply-to' email
 
         # Get the plain text version of the email body
         plain_text_body = strip_html_tags(body)
@@ -52,7 +52,7 @@ def send_email():
             body=plain_text_body,  # Plain text content
             html=body,  # HTML content
             sender=app.config['MAIL_DEFAULT_SENDER'],  
-            reply_to=reply_to
+            reply_to=reply_to  # Set the 'Reply-to' email
         )
 
         # Handle file attachments (if any)
