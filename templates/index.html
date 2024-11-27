@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Sender</title>
-    <!-- Include Quill's CSS -->
+    <title>Send Email Form</title>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-
     <style>
         /* Background color for the entire page */
         body {
@@ -16,15 +15,16 @@
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 300vh;
+            align-items: flex-start;
+            height: 300vh; /* Increased page height */
             flex-direction: column;
+            text-align: center;
         }
 
         /* Style for the header */
-        h1 {
+        h2 {
             text-align: center;
-            font-size: 3em; /* Increase title size */
+            font-size: 3em; /* Large title size */
             margin-bottom: 30px;
             color: #9e1b32; /* Chrome red */
         }
@@ -36,7 +36,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 80%;
-            max-width: 900px; /* Increase form width */
+            max-width: 900px; /* Wider form */
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -103,68 +103,58 @@
             color: #007bff;
             margin-top: 20px;
         }
-
     </style>
 </head>
 <body>
-    <h1>Send an Email</h1>
-
-    <form method="POST" action="/send-email">
-        <!-- From Name -->
+    <h2>Send an Email</h2>
+    <form action="/send_email" method="POST" enctype="multipart/form-data">
         <label for="from-name">From Name:</label><br>
         <input type="text" id="from-name" name="from-name" required><br><br>
 
-        <!-- Recipients -->
-        <label for="email-recipient">Recipients (comma separated):</label><br>
-        <input type="text" id="email-recipient" name="email-recipient" required><br><br>
+        <label for="bcc">BCC (comma-separated emails):</label><br>
+        <input type="text" id="bcc" name="bcc" required><br><br>
 
-        <!-- BCC -->
-        <label for="email-bcc">BCC (comma separated):</label><br>
-        <input type="text" id="email-bcc" name="email-bcc"><br><br>
-
-        <!-- Reply-To -->
-        <label for="email-reply-to">Reply-To:</label><br>
-        <input type="email" id="email-reply-to" name="email-reply-to"><br><br>
-
-        <!-- Subject -->
-        <label for="email-subject">Subject:</label><br>
-        <input type="text" id="email-subject" name="email-subject" required><br><br>
+        <label for="subject">Subject:</label><br>
+        <input type="text" id="subject" name="subject" required><br><br>
 
         <!-- Email Body (Quill editor) -->
         <label for="email-body">Body:</label><br>
         <div id="editor"></div><br>
 
+        <!-- Attachments -->
+        <label for="attachment">Attach Image (optional):</label><br>
+        <input type="file" name="attachment" accept="image/*"><br><br>
+
         <input type="submit" value="Send Email">
     </form>
 
-    <!-- Include Quill's JS -->
-    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script>
-        // Initialize Quill editor
         var quill = new Quill('#editor', {
             theme: 'snow',
             modules: {
                 toolbar: [
+                    [{ 'header': '1'}, { 'header': '2'}, { 'font': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
                     ['bold', 'italic', 'underline'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                    ['link', 'image'],
-                    [{ 'align': [] }]
+                    ['link'],
+                    ['image']
                 ]
             }
         });
 
-        // On form submission, add the Quill content as a hidden input
+        // Handle form submission to include Quill content
         document.querySelector('form').addEventListener('submit', function(e) {
-            // Get the HTML content of the Quill editor
+            // Get the HTML content from Quill
             var emailBody = quill.root.innerHTML;
-
-            // Create a hidden input to store the email body content
+            
+            // Create a hidden input for the email body
             var emailBodyInput = document.createElement('input');
             emailBodyInput.type = 'hidden';
             emailBodyInput.name = 'email-body';
             emailBodyInput.value = emailBody;
-
-            // Append it to the form
+            
+            // Append the hidden input to the form
             this.appendChild(emailBodyInput);
         });
     </script>
