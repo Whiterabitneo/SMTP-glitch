@@ -1,80 +1,82 @@
-from flask import Flask, render_template, request, redirect, url_for
-import os
-from dotenv import load_dotenv
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+from flask import Flask, render_template, request, redirect, url_for
+import os
+from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables from .env
 load_dotenv()
 
 app = Flask(__name__)
 
-# Send email function
-def send_email(to_email, subject, body, attachments):
-    # SMTP Server configuration
-    sender_email = "cardonewhite081@gmail.com"  # Sender email (fixed)
-    sender_name = "Your Name"  # Sender's name, can modify as needed
-    reply_to_email = "cardonewhite081@gmail.com"  # Reply-to email (fixed)
-    smtp_server = "smtp.gmail.com"  # Gmail SMTP server
-    smtp_port = 587  # SMTP port for Gmail
-    smtp_password = os.getenv("SMTP_PASSWORD")  # Load the SMTP password from the environment variable
+# Sender email details (your email as the SMTP server sender)
+SENDER_EMAIL = "cardonewhite081@gmail.com"  # Your SMTP server email
+SENDER_NAME = "Your Name"
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")  # Load the password from the environment variable
 
-    # Prepare the email message
+# Function to send email with attachments
+def send_email(sender_email, sender_name, reply_to_email, recipient_email, subject, body, attachments):
     msg = MIMEMultipart()
     msg['From'] = f"{sender_name} <{sender_email}>"
-    msg['To'] = to_email  # Recipient email (dynamic input from the user)
+    msg['To'] = recipient_email  # Single recipient
     msg['Subject'] = subject
     msg.add_header('Reply-To', reply_to_email)
 
-    # Attach HTML body
+    # Add the body of the email
     msg.attach(MIMEText(body, 'html'))
 
-    # Attach files if any
+    # Add attachments
     for attachment in attachments:
         filename = os.path.basename(attachment)
-        attachment_part = MIMEBase('application', 'octet-stream')
-        with open(attachment, 'rb') as f:
-            attachment_part.set_payload(f.read())
-        encoders.encode_base64(attachment_part)
-        attachment_part.add_header('Content-Disposition', f'attachment; filename={filename}')
-        msg.attach(attachment_part)
+        part = MIMEBase('application', 'octet-stream')
+        with open(attachment, 'rb') as file:
+            part.set_payload(file.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', f'attachment; filename={filename}')
+        msg.attach(part)
 
-    # Send email using SMTP server
+    # SMTP server configuration
     try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server_obj:
-            server_obj.starttls()  # Secure connection
-            server_obj.login(sender_email, smtp_password)
-            server_obj.sendmail(sender_email, to_email, msg.as_string())
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()  # Secure connection
+        server.login(sender_email, SMTP_PASSWORD)  # Login to the SMTP server
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
         return "Email sent successfully!"
     except Exception as e:
-        return f"Failed to send email: {str(e)}"
+        return f"Failed to send email: {e}"
 
-@app.route('/', methods=['GET', 'POST'])
+# Route to display the email form
+@app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == 'POST':
-        # Fixed sender email and reply-to email
-        sender_email = "cardonewhite081@gmail.com"  # Fixed sender email
+    if request.method == "POST":
+        # Extract form data
+        sender_email = SENDER_EMAIL  # Pre-filled sender email
         sender_name = request.form['sender_name']
-        reply_to_email = "cardonewhite081@gmail.com"  # Fixed reply-to email
-        to_email = request.form['to_email']  # Recipient email (from user input)
+        reply_to_email = request.form['reply_to_email']
+        recipient_email = request.form['recipient_email']
         subject = request.form['subject']
         body = request.form['body']
-        attachments = request.files.getlist('attachments')
+        attachments = request.files.getlist('attachments')  # Get attached files
 
-        # Collect attachment file paths
+        # Save files to disk (for sending later)
         attachment_paths = []
         for file in attachments:
             if file:
-                attachment_paths.append(file.filename)
-                file.save(f"./uploads/{file.filename}")  # Save the uploaded file
+                filepath = os.path.join('uploads', file.filename)
+                file.save(filepath)
+                attachment_paths.append(filepath)
 
-        result = send_email(to_email, subject, body, attachment_paths)
-        return result
+        # Send the email
+        result = send_email(sender_email, sender_name, reply_to_email, recipient_email, subject, body, attachment_paths)
 
-    return render_template('index.html')
+        # Redirect back to the form with a success or error message
+        return render_template("index.html", message=result)
+
+    return render_template("index.html", message="")
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True)
