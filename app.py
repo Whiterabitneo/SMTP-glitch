@@ -1,57 +1,52 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask_mail import Mail, Message
 import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+from flask import Flask, request, render_template, redirect, url_for
+from flask_mail import Mail, Message
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# Setup the Flask-Mail extension
+# Setup the mail configuration (make sure your SMTP credentials are correct)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = os.getenv('SMTP_USER')  # Your Gmail address
-app.config['MAIL_PASSWORD'] = os.getenv('SMTP_PASSWORD')  # Your Gmail app password
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('SMTP_USER')  # Default sender email
+app.config['MAIL_PASSWORD'] = os.getenv('SMTP_PASS')  # Your Gmail password or app-specific password
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('SMTP_USER')  # Default sender email address
 
 mail = Mail(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')  # Render the email form
+    return render_template('index.html')
 
-@app.route('/send-email', methods=['POST'])
+@app.route('/send_email', methods=['POST'])
 def send_email():
-    # Extract the form data
     from_name = request.form['from-name']
-    recipients = request.form['email-recipient'].split(',')
-    bcc = request.form.get('email-bcc', '').split(',')
-    reply_to = request.form.get('email-reply-to', '')
-    subject = request.form['email-subject']
-    body = request.form['email-body']  # The body is the HTML content from Quill
+    bcc = request.form['bcc'].split(',')  # Get the list of emails from the BCC field
+    subject = request.form['subject']
+    body = request.form['email-body']  # The body from Quill (HTML content)
 
-    # Create the email Message object
-    msg = Message(subject=subject,
-                  recipients=recipients,
-                  html=body,  # Set the body as HTML content
-                  sender=f'{from_name} <{os.getenv("SMTP_USER")}>')
+    # Handling the attachment (image)
+    attachment = request.files.get('attachment')
+    if attachment:
+        filename = secure_filename(attachment.filename)
+        attachment.save(os.path.join('uploads', filename))
 
-    # Add BCC recipients if provided
-    if bcc:
-        msg.bcc = bcc
+    # Create the email message
+    msg = Message(subject=subject, recipients=[], bcc=bcc, sender=f'{from_name} <{os.getenv("SMTP_USER")}>', html=body)
 
-    # Set the Reply-To field if provided
-    if reply_to:
-        msg.reply_to = reply_to
+    # Attach the image if there is one
+    if attachment:
+        with app.open_resource(os.path.join('uploads', filename)) as img:
+            msg.attach(filename, 'image/jpeg', img.read())
 
     # Send the email
     try:
         mail.send(msg)
-        return f'Email successfully sent to {", ".join(recipients)}'
+        return 'Email sent successfully!', 200
     except Exception as e:
-        return f'Error sending email: {str(e)}'
+        return f"An error occurred: {e}", 500
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
