@@ -12,7 +12,9 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+# Set the default sender (required for Flask-Mail to work properly)
+app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'  # Set this to your email
 
 # Configure upload folder (create the directory dynamically)
 UPLOAD_FOLDER = 'uploads/'  # Directory where files will be saved
@@ -36,11 +38,13 @@ def send_email():
         body = request.form['email-body']
         attachment = request.files.get('attachment')
 
+        # Create the email message
         msg = Message(
             subject=subject,
             recipients=[],  # No recipients because using BCC
             bcc=bcc_emails,
             body=body,
+            sender=app.config['MAIL_DEFAULT_SENDER']  # Explicitly set the sender here
         )
 
         # Save the attachment if it exists
