@@ -15,7 +15,7 @@ app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'paulmotil235@gmail.com')  
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'pvsrvdvheqeeedid')  
 
-
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'hewlettpackardenterprise01@gmail.com') 
 
 # Initialize Flask-Mail
 mail = Mail(app)
