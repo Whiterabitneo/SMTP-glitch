@@ -14,7 +14,7 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 
 # Set the default sender (required for Flask-Mail to work properly)
-app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'  # Set this to your email
+app.config['MAIL_DEFAULT_SENDER'] = 'cardonewhite081@gmail.com'  # Set this to your email
 
 # Configure upload folder (create the directory dynamically)
 UPLOAD_FOLDER = 'uploads/'  # Directory where files will be saved
