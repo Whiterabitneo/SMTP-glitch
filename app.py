@@ -11,7 +11,7 @@ app.config['MAIL_PORT'] = 587  # Port for sending emails using TLS
 app.config['MAIL_USE_TLS'] = True  # Use TLS for encryption
 app.config['MAIL_USE_SSL'] = False  # Do not use SSL
 app.config['MAIL_USERNAME'] = 'hewlettpackardenterprise01@gmail.com'  # Your Gmail address
-app.config['MAIL_PASSWORD'] = 'your-app-password-here'  # Use the generated App Password here
+app.config['MAIL_PASSWORD'] = 'fahyzamnsbcwlqjih'  # Use the generated App Password here
 
 # Set the default sender (required for Flask-Mail to work properly)
 app.config['MAIL_DEFAULT_SENDER'] = 'hewlettpackardenterprise01@gmail.com'  # Set this to your email
