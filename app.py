@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Configure email settings (use environment variables or direct credentials)
 app.config['MAIL_SERVER'] = 'smtp25.elasticemail.com'  
-app.config['MAIL_PORT'] = 2525  
+app.config['MAIL_PORT'] = 587 
 app.config['MAIL_USE_TLS'] = True  
 app.config['MAIL_USE_SSL'] = False  
 
