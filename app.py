@@ -12,10 +12,11 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False  
 
 # Use environment variables to keep sensitive credentials secure
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'cardonewhite081@gmail.com')  
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'jweozrcucvzvpvvx')  
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'hewlettpackardenterprise01@gmail.com')  
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'rklqcmcebfdjtcca')  
 
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'cardonewhite081@gmail.com') 
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'hewlettpackardenterprise01@gmail.com
+') 
 
 # Initialize Flask-Mail
 mail = Mail(app)
