@@ -6,14 +6,14 @@ import re
 app = Flask(__name__)
 
 # Configure email settings (use environment variables or direct credentials)
-app.config['MAIL_SERVER'] = 'smtp25.elasticemail.com'  
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
 app.config['MAIL_PORT'] = 587 
 app.config['MAIL_USE_TLS'] = True  
 app.config['MAIL_USE_SSL'] = False  
 
 # Use environment variables to keep sensitive credentials secure
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'info@globalfinances.online')  
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'B48BA5C78FDA6F81B0AF99E63FFDA91C6042')  
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'hewlettpackardenterprise01@gmail.com')  
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'fahyzamnsbcwlqjh')  
 
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'info@globalfinances.online') 
 
