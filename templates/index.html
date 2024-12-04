@@ -185,37 +185,48 @@
 
             loadingDiv.style.display = 'block'; // Show loading indicator
 
+            // Track the number of emails being sent
+            let totalEmails = formData.get('bcc').split(',').length; // Assuming comma-separated emails
+            let emailsSent = 0;
+
+            // Reset popup message
+            popupText.textContent = '';
+            popupMessage.style.display = 'none';
+
+            // Function to show the popup
+            function showPopup(message, success = true) {
+                popupText.textContent = message;
+                popupMessage.classList.remove('sent-success', 'sent-error');
+                popupMessage.classList.add(success ? 'sent-success' : 'sent-error');
+                popupMessage.style.display = 'block';
+            }
+
             fetch('/send_email', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
-                loadingDiv.style.display = 'none'; // Hide loading indicator
+                emailsSent++;
+
                 if (data.status === 'success') {
-                    // Show success popup
-                    popupText.textContent = 'Emails Sent Successfully!';
-                    popupMessage.classList.add('sent-success');
-                    popupMessage.style.display = 'block';
+                    showPopup(`Email ${emailsSent} sent successfully!`, true);
                 } else {
-                    // Show error popup
-                    popupText.textContent = `Error: ${data.message}`;
-                    popupMessage.classList.add('sent-error');
-                    popupMessage.style.display = 'block';
+                    showPopup(`Error with Email ${emailsSent}: ${data.message}`, false);
+                }
+
+                // If all emails have been sent, close the popup
+                if (emailsSent === totalEmails) {
+                    setTimeout(() => {
+                        popupMessage.style.display = 'none'; // Hide the popup after all emails are sent
+                    }, 3000); // Hide the popup after 3 seconds
                 }
             })
             .catch(error => {
                 loadingDiv.style.display = 'none';
-                popupText.textContent = `An error occurred: ${error.message}`;
-                popupMessage.classList.add('sent-error');
-                popupMessage.style.display = 'block';
+                showPopup(`An error occurred: ${error.message}`, false);
             });
         });
-
-        // Close the popup after 5 seconds
-        setTimeout(() => {
-            popupMessage.style.display = 'none';
-        }, 5000);
     </script>
 </body>
 </html>
