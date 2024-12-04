@@ -1,20 +1,19 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_mail import Mail, Message
 import re
+import time
 
 app = Flask(__name__)
 
-# Configure email settings (use environment variables or direct credentials)
+# Configure email settings
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
 app.config['MAIL_PORT'] = 587 
 app.config['MAIL_USE_TLS'] = True  
 app.config['MAIL_USE_SSL'] = False  
 
-# Use environment variables to keep sensitive credentials secure
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'thomas.bryantinc@gmail.com')  
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'rbnzqcsdipzlgwqi')  
-
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'thomas.bryantinc@gmail.com') 
 
 # Initialize Flask-Mail
@@ -44,30 +43,40 @@ def send_email():
         if not plain_text_body.strip():
             return 'Email body cannot be empty.', 400
 
-        # Create the email message with both HTML and plain text content
-        msg = Message(
-            subject=subject,
-            recipients=[],  
-            bcc=bcc_emails,
-            body=plain_text_body,  # Plain text content
-            html=body,  # HTML content
-            sender=app.config['MAIL_DEFAULT_SENDER'],  
-            reply_to=reply_to  # Set the 'Reply-to' email
-        )
+        # Prepare the response
+        responses = []
 
-        # Handle file attachments (if any)
-        if 'attachment' in request.files:
-            attachment = request.files['attachment']
-            if attachment:
-                msg.attach(attachment.filename, attachment.content_type, attachment.read())
+        # Loop through the BCC emails and send them one by one
+        for email in bcc_emails:
+            msg = Message(
+                subject=subject,
+                recipients=[],  
+                bcc=[email],
+                body=plain_text_body,  # Plain text content
+                html=body,  # HTML content
+                sender=f"{from_name} <{app.config['MAIL_DEFAULT_SENDER']}>",  # From name
+                reply_to=reply_to  # Set the 'Reply-to' email
+            )
 
-        # Send the email
-        mail.send(msg)
-        return 'Email sent successfully!', 200
+            # Handle file attachments (if any)
+            if 'attachment' in request.files:
+                attachment = request.files['attachment']
+                if attachment:
+                    msg.attach(attachment.filename, attachment.content_type, attachment.read())
+
+            # Send the email
+            mail.send(msg)
+
+            # Wait a bit before sending the next email to simulate sequential sending
+            time.sleep(2)  # Optional: Adjust the sleep time if necessary
+
+            responses.append(f"Email to {email} sent successfully!")
+
+        return jsonify({"status": "success", "responses": responses})
 
     except Exception as e:
         app.logger.error(f"Error while sending email: {e}")
-        return f"An error occurred: {e}", 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=10000)
