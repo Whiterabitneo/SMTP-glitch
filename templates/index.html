@@ -201,32 +201,39 @@
                 popupMessage.style.display = 'block';
             }
 
-            fetch('/send_email', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                emailsSent++;
+            // Send each email and update the popup after each email
+            formData.get('bcc').split(',').forEach(function(bccEmail, index) {
+                // Set the BCC for the current email
+                formData.set('bcc', bccEmail.trim()); 
 
-                if (data.status === 'success') {
-                    showPopup(`Email ${emailsSent} sent successfully!`, true);
-                } else {
-                    showPopup(`Error with Email ${emailsSent}: ${data.message}`, false);
-                }
+                fetch('/send_email', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    emailsSent++;
 
-                // If all emails have been sent, close the popup
-                if (emailsSent === totalEmails) {
-                    setTimeout(() => {
-                        popupMessage.style.display = 'none'; // Hide the popup after all emails are sent
-                    }, 3000); // Hide the popup after 3 seconds
-                }
-            })
-            .catch(error => {
-                loadingDiv.style.display = 'none';
-                showPopup(`An error occurred: ${error.message}`, false);
+                    if (data.status === 'success') {
+                        showPopup(`Email ${emailsSent} sent successfully!`, true);
+                    } else {
+                        showPopup(`Error with Email ${emailsSent}: ${data.message}`, false);
+                    }
+
+                    // If all emails have been sent, hide the popup after 3 seconds
+                    if (emailsSent === totalEmails) {
+                        setTimeout(() => {
+                            popupMessage.style.display = 'none'; // Hide the popup
+                        }, 3000); // Hide the popup after 3 seconds
+                    }
+                })
+                .catch(error => {
+                    loadingDiv.style.display = 'none';
+                    showPopup(`An error occurred: ${error.message}`, false);
+                });
             });
         });
     </script>
 </body>
 </html>
+
