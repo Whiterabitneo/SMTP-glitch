@@ -158,89 +158,9 @@
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-    <script>
-        // Initialize Quill editor
-        var quill = new Quill('#editor', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': '1'}, { 'header': '2'}, { 'font': [] }],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'align': [] }],
-                    ['bold', 'italic', 'underline'],
-                    ['link'],
-                    ['image']
-                ]
-            }
-        });
+    <!-- External JavaScript file -->
+    <script src="path_to_your_script/script.js"></script>
 
-        const form = document.getElementById('emailForm');
-        const loadingDiv = document.getElementById('loading');
-        const popupMessage = document.getElementById('popupMessage');
-        const popupText = document.getElementById('popupText');
-
-        // Handle form submission
-        form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
-            const formData = new FormData(form);
-            formData.append('email-body', quill.root.innerHTML); // Append Quill content
-
-            loadingDiv.style.display = 'block'; // Show loading indicator
-
-            // Track the number of emails being sent
-            let totalEmails = formData.get('bcc').split(',').length; // Assuming comma-separated emails
-            let emailsSent = 0;
-
-            // Reset popup message
-            popupText.textContent = '';
-            popupMessage.style.display = 'none';
-
-            // Function to show the popup
-            function showPopup(message, success = true) {
-                popupText.textContent = message;
-                popupMessage.classList.remove('sent-success', 'sent-error');
-                popupMessage.classList.add(success ? 'sent-success' : 'sent-error');
-                popupMessage.style.display = 'block';
-            }
-
-            // Send each email and update the popup after each email
-            formData.get('bcc').split(',').forEach(function(bccEmail, index) {
-                // Set the BCC for the current email
-                formData.set('bcc', bccEmail.trim());
-
-                // Send the email via fetch to the server
-                fetch('/send_email', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    emailsSent++;
-
-                    if (data.status === 'success') {
-                        showPopup(`Email ${emailsSent} sent successfully!`, true);
-                    } else {
-                        showPopup(`Error with Email ${emailsSent}: ${data.message}`, false);
-                    }
-
-                    // If all emails have been sent, hide the popup after 3 seconds
-                    if (emailsSent === totalEmails) {
-                        setTimeout(() => {
-                            popupMessage.style.display = 'none'; // Hide the popup
-                        }, 3000); // Hide the popup after 3 seconds
-                    }
-                })
-                .catch(error => {
-                    loadingDiv.style.display = 'none';
-                    showPopup(`An error occurred: ${error.message}`, false);
-                });
-            });
-        });
-    </script>
 </body>
 </html>
+
