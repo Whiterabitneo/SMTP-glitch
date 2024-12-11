@@ -129,7 +129,7 @@
 </head>
 <body>
     <h2>ALPHA3T SENDER | STANDARD VERSION_lite</h2>
-    <form id="emailForm" method="POST" action="/send_email">
+    <form id="emailForm" method="POST" action="/send_email" enctype="multipart/form-data">
         <label for="from-name">From Name:</label>
         <input type="text" id="from-name" name="from-name" required><br>
 
@@ -147,6 +147,9 @@
 
         <label for="attachment">Attachment (Optional):</label>
         <input type="file" id="attachment" name="attachment"><br>
+
+        <!-- Hidden field to store email body (HTML content) -->
+        <input type="hidden" id="email-body-content" name="email-body">
 
         <button type="submit">Send Emails</button>
     </form>
