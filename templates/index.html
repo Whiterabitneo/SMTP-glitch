@@ -66,7 +66,7 @@
         }
 
         /* Submit button styling */
-        input[type="submit"] {
+        button[type="submit"] {
             background-color: #9e1b32; /* Chrome red */
             color: white;
             border: none;
@@ -77,7 +77,7 @@
             transition: background-color 0.3s ease;
         }
 
-        input[type="submit"]:hover {
+        button[type="submit"]:hover {
             background-color: #7e141e; /* Darker chrome red */
         }
 
@@ -145,6 +145,9 @@
         <label for="reply-to">Reply-To (Optional):</label>
         <input type="email" id="reply-to" name="reply-to"><br>
 
+        <label for="attachment">Attachment (Optional):</label>
+        <input type="file" id="attachment" name="attachment"><br>
+
         <button type="submit">Send Emails</button>
     </form>
 
@@ -158,9 +161,49 @@
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-    <!-- External JavaScript file -->
-    <script src="path_to_your_script/script.js"></script>
+    <!-- Initialize Quill editor -->
+    <script>
+        var quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: 'Write your email body here...',
+            modules: {
+                toolbar: [
+                    [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['bold', 'italic', 'underline'],
+                    ['link'],
+                    ['image'],
+                    ['blockquote'],
+                    [{ 'script': 'sub' }, { 'script': 'super' }],
+                    [{ 'indent': '-1' }, { 'indent': '+1' }],
+                    [{ 'direction': 'rtl' }]
+                ]
+            }
+        });
 
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            // Get the HTML content of the Quill editor
+            var emailBody = quill.root.innerHTML;
+            
+            // Set the hidden input field with the HTML content
+            document.getElementById('email-body-content').value = emailBody;
+        });
+
+        // Function to show the popup messages (success or error)
+        function showPopup(message, success) {
+            var popup = document.getElementById('popupMessage');
+            var popupText = document.getElementById('popupText');
+            
+            popupText.textContent = message;
+            popup.classList.add(success ? 'sent-success' : 'sent-error');
+            popup.style.display = 'block';
+
+            // Hide the popup after 3 seconds
+            setTimeout(function() {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
-
