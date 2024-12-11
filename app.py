@@ -7,14 +7,14 @@ import time
 app = Flask(__name__)
 
 # Configure email settings
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
-app.config['MAIL_PORT'] = 587 
-app.config['MAIL_USE_TLS'] = True  
-app.config['MAIL_USE_SSL'] = False  
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Consider using services like SendGrid for production
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
 
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'paulmotil235@gmail.com')  
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'pvsrvdvheqeeedid')  
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'paulmotil235@gmail.com') 
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'paulmotil235@gmail.com')  # Use your verified email
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'pvsrvdvheqeeedid')  # Use your Gmail app password
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'paulmotil235@gmail.com')
 
 # Initialize Flask-Mail
 mail = Mail(app)
@@ -32,9 +32,9 @@ def strip_html_tags(html):
 def send_email():
     try:
         from_name = request.form['from-name']
-        bcc_emails = request.form['bcc'].split(',')  
+        bcc_emails = request.form['bcc'].split(',')
         subject = request.form['subject']
-        body = request.form['email-body']  # This is populated by the hidden field
+        body = request.form['email-body']
         reply_to = request.form.get('reply-to')
 
         # Get the plain text version of the email body
@@ -50,13 +50,18 @@ def send_email():
         for email in bcc_emails:
             msg = Message(
                 subject=subject,
-                recipients=[],  
+                recipients=[],
                 bcc=[email],
                 body=plain_text_body,  # Plain text content
                 html=body,  # HTML content
                 sender=f"{from_name} <{app.config['MAIL_DEFAULT_SENDER']}>",  # From name
-                reply_to=reply_to  # Set the 'Reply-to' email
+                reply_to=reply_to,  # Set the 'Reply-to' email
             )
+
+            # Add proper headers
+            msg.headers['X-Mailer'] = 'Flask-Mail'  # To specify your app
+            msg.headers['List-Unsubscribe'] = '<mailto:unsubscribe@yourdomain.com>'  # Add unsubscribe link if necessary
+            msg.headers['Precedence'] = 'bulk'  # For bulk emails, helps reduce spam flags
 
             # Handle file attachments (if any)
             if 'attachment' in request.files:
@@ -68,7 +73,7 @@ def send_email():
             mail.send(msg)
 
             # Wait a bit before sending the next email to simulate sequential sending
-            time.sleep(2)  # Optional: Adjust the sleep time if necessary
+            time.sleep(2)
 
             responses.append(f"Email to {email} sent successfully!")
 
